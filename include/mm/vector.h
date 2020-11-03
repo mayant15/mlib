@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <stdexcept>
 #include <cmath>
 
@@ -7,7 +8,7 @@ namespace mm
 {
     constexpr unsigned int CAPACITY_MULTIPLIER = 2;
 
-    template<typename T>
+    template<typename T, typename Allocator = std::allocator<T>>
     class vector
     {
     private:
@@ -16,6 +17,8 @@ namespace mm
         T* _data = nullptr;
 
     public:
+        using traits = std::allocator_traits<Allocator>;
+
         vector(const size_t size = 0) : _size(size)
         {
             if (size == 0)
@@ -27,29 +30,32 @@ namespace mm
                 _capacity = std::pow(2, std::ceil(std::log2(_size)));
             }
 
-            _data = new T[size];
+            Allocator ac;
+            _data = traits::allocate(ac, _capacity, nullptr);
         }
 
         vector(const vector& other) : _size(other.size()), _capacity(other.capacity())
         {
-            _data = new T[_capacity];
+            Allocator ac;
+            _data = traits::allocate(ac, _capacity, nullptr);
             T* other_data = other.data();
             for (size_t i = 0; i < _size; i++)
             {
-                _data[i] = other_data[i];
+                traits::construct(ac, _data + i, other_data[i]);
             }
         }
 
         vector(vector&& other) noexcept : _size(other.size()), _capacity(other.capacity())
         {
-            _data = new T[_capacity];
+            Allocator ac;
+            _data = traits::allocate(ac, _capacity, nullptr);
             T* other_data = other.data();
             for (size_t i = 0; i < _size; i++)
             {
-                _data[i] = other_data[i];
+                traits::construct(ac, _data + i, other_data[i]);
+                traits::destroy(ac, other_data + i);
             }
-
-            delete[] other_data;
+            traits::deallocate(ac, other_data, _capacity);
             other._data = nullptr;
             other._size = 0;
             other._capacity = 0;
@@ -57,15 +63,21 @@ namespace mm
 
         vector(std::initializer_list<T> list) : vector(list.size())
         {
+            Allocator ac;
             for (auto iter = list.begin(); iter < list.end(); iter++)
             {
-                _data[iter - list.begin()] = *iter;
+                traits::construct(ac, _data + (iter - list.begin()), *iter);
             }
         }
 
         ~vector()
         {
-           delete[] _data;
+            Allocator ac;
+            for (size_t i = 0; i < _size; i++)
+            {
+                traits::destroy(ac, _data + i);
+            }
+            traits::deallocate(ac, _data, _capacity);
         }
 
         size_t size() const
@@ -86,11 +98,6 @@ namespace mm
         T& operator[](const size_t index)
         {
             return *(_data + index);
-        }
-
-        T& operator=(const mm::vector<T>& other)
-        {
-            
         }
 
         T& at(const size_t index)
@@ -130,21 +137,28 @@ namespace mm
                 realloc(CAPACITY_MULTIPLIER * _capacity);
             }
 
-            _data[_size] = val;
+            Allocator ac;
+            traits::construct(ac, _data + _size, val);
             _size = _size + 1;
         }
 
     private:
         void realloc(const size_t capacity)
         {
-            T* new_data = new T[capacity];
+            Allocator ac;
+            T* new_data = traits::allocate(ac, capacity, nullptr);
             
             for (size_t i = 0; i < _size; i++)
             {
                 new_data[i] = _data[i];
             }
-            delete[] _data;
-
+            
+            // Delete old data
+            for (size_t i = 0; i < _size; i++)
+            {
+                traits::destroy(ac, _data + i);
+            }
+            traits::deallocate(ac, _data, _capacity);
             _data = new_data;
             _capacity = capacity;
         }
