@@ -30,6 +30,31 @@ namespace mm
             _data = new T[size];
         }
 
+        vector(const vector& other) : _size(other.size()), _capacity(other.capacity())
+        {
+            _data = new T[_capacity];
+            T* other_data = other.data();
+            for (size_t i = 0; i < _size; i++)
+            {
+                _data[i] = other_data[i];
+            }
+        }
+
+        vector(vector&& other) noexcept : _size(other.size()), _capacity(other.capacity())
+        {
+            _data = new T[_capacity];
+            T* other_data = other.data();
+            for (size_t i = 0; i < _size; i++)
+            {
+                _data[i] = other_data[i];
+            }
+
+            delete[] other_data;
+            other._data = nullptr;
+            other._size = 0;
+            other._capacity = 0;
+        }
+
         vector(std::initializer_list<T> list) : vector(list.size())
         {
             for (auto iter = list.begin(); iter < list.end(); iter++)
@@ -61,6 +86,11 @@ namespace mm
         T& operator[](const size_t index)
         {
             return *(_data + index);
+        }
+
+        T& operator=(const mm::vector<T>& other)
+        {
+            
         }
 
         T& at(const size_t index)

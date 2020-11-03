@@ -5,11 +5,22 @@
 
 TEST_CASE("Testing the vector class") 
 {
-    mm::vector<int> vec = {1, 2, 3};
+    mm::vector<int> vec {1, 2, 3};
     REQUIRE(vec.size() == 3);
     REQUIRE(vec.capacity() == 4);
 
-    SUBCASE("Test direct access and assignment")
+    SUBCASE("Test move")
+    {
+        auto new_vec = std::move(vec);
+        CHECK(new_vec.size() == 3);
+        CHECK(new_vec.front() == 1);
+        CHECK(new_vec.capacity() == 4);
+        CHECK(vec.data() == nullptr);
+        CHECK(vec.size() == 0);
+        CHECK(vec.capacity() == 0);
+    }
+
+    SUBCASE("Test vector::operator[]")
     {
         CHECK(vec[2] == 3);
         vec[2] = 10;
