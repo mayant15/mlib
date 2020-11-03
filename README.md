@@ -1,5 +1,7 @@
 # mmcontainers
 
+![CI](https://github.com/mayant15/mmcontainers/workflows/CI/badge.svg?branch=master)
+
 Custom implementation of common data structures
 
 ## Usage
