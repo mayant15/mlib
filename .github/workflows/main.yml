@@ -1,0 +1,14 @@
+name: CI
+on:
+  push:
+    branches: [ master, tests ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run the tests
+        run: ./test.sh
