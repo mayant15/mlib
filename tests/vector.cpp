@@ -3,71 +3,104 @@
 
 #include "../include/mm/vector.h"
 
+#include <string>
+
 TEST_CASE("Testing the vector class") 
 {
-    mm::vector<int> vec {1, 2, 3};
-    REQUIRE(vec.size() == 3);
-    REQUIRE(vec.capacity() == 4);
+    mm::vector<int> ivec {1, 2, 3};
+    mm::vector<std::string> svec {"hello", "world", "!"};
+    
+    REQUIRE(ivec.size() == 3);
+    REQUIRE(ivec.capacity() == 4);
 
     SUBCASE("Test move")
     {
-        auto new_vec = std::move(vec);
-        CHECK(new_vec.size() == 3);
-        CHECK(new_vec.front() == 1);
-        CHECK(new_vec.capacity() == 4);
-        CHECK(vec.data() == nullptr);
-        CHECK(vec.size() == 0);
-        CHECK(vec.capacity() == 0);
+        auto new_ivec = std::move(ivec);
+        CHECK(new_ivec.size() == 3);
+        CHECK(new_ivec.front() == 1);
+        CHECK(new_ivec.capacity() == 4);
+        CHECK(ivec.data() == nullptr);
+        CHECK(ivec.size() == 0);
+        CHECK(ivec.capacity() == 0);
+
+        auto new_svec = std::move(svec);
+        CHECK(new_svec.size() == 3);
+        CHECK(new_svec.front() == "hello");
+        CHECK(new_svec.capacity() == 4);
+        CHECK(svec.data() == nullptr);
+        CHECK(svec.size() == 0);
+        CHECK(svec.capacity() == 0);
     }
 
     SUBCASE("Test vector::operator[]")
     {
-        CHECK(vec[2] == 3);
-        vec[2] = 10;
-        CHECK(vec[2] == 10);
+        CHECK(ivec[2] == 3);
+        ivec[2] = 10;
+        CHECK(ivec[2] == 10);
+
+        CHECK(svec[2] == "!");
+        svec[2] = "test";
+        CHECK(svec[2] == "test");
     }
 
     SUBCASE("Test vector::at()")
     {
-        CHECK(vec.at(2) == 3);
-        CHECK_THROWS_AS(vec.at(10), std::out_of_range);
+        CHECK(ivec.at(2) == 3);
+        CHECK_THROWS_AS(ivec.at(10), std::out_of_range);
+
+        CHECK(svec.at(2) == "!");
+        CHECK_THROWS_AS(ivec.at(10), std::out_of_range);
     }
 
     SUBCASE("Test vector::front()")
     {
-        CHECK(vec.front() == 1);
+        CHECK(ivec.front() == 1);
+        CHECK(svec.front() == "hello");
     }
 
     SUBCASE("Test vector::back()")
     {
-        CHECK(vec.back() == 3);
+        CHECK(ivec.back() == 3);
+        CHECK(svec.back() == "!");
     }
 
     SUBCASE("Test vector::push_back()")
     {
-        vec.push_back(30);
-        CHECK(vec.size() == 4);
-        CHECK(vec.back() == 30);
+        ivec.push_back(30);
+        CHECK(ivec.size() == 4);
+        CHECK(ivec.back() == 30);
+
+        svec.push_back("next");
+        CHECK(svec.size() == 4);
+        CHECK(svec.back() == "next");
     }
 
     SUBCASE("Test vector::realloc()")
     {
-        vec.push_back(20);
-        vec.push_back(30);
-        CHECK(vec.capacity() == 8);
-        CHECK(vec.back() == 30);
+        ivec.push_back(20);
+        ivec.push_back(30);
+        CHECK(ivec.capacity() == 8);
+        CHECK(ivec.back() == 30);
+
+        svec.push_back("new");
+        svec.push_back("word");
+        CHECK(svec.capacity() == 8);
+        CHECK(svec.back() == "word");
     }
 
     SUBCASE("Test vector::empty()")
     {
         mm::vector<int> empty;
         CHECK(empty.empty());
-        CHECK_FALSE(vec.empty());
+        CHECK_FALSE(ivec.empty());
     }
 
     SUBCASE("Test vector::data()")
     {
-        CHECK(*vec.data() == vec.front());
-        CHECK_FALSE(vec.empty());
+        CHECK(*ivec.data() == ivec.front());
+        CHECK_FALSE(ivec.empty());
+
+        CHECK(*svec.data() == svec.front());
+        CHECK_FALSE(svec.empty());
     }
 }
