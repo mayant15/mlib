@@ -17,7 +17,16 @@ namespace mm
         T* _data = nullptr;
 
     public:
+        using value_type = T;
+        using allocator_type = Allocator;
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using reference = value_type&;
+        using const_reference = const value_type&;
+        
         using traits = std::allocator_traits<Allocator>;
+        using pointer = traits::pointer;
+        using const_pointer = traits::const_pointer;
 
         vector(const size_t size = 0) : _size(size)
         {
