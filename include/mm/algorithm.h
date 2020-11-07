@@ -5,14 +5,11 @@
 
 namespace mm
 {
-    template<typename RandomIt>
-    void make_heap(RandomIt first, RandomIt last)
-    {
-        make_heap(first, last, std::less<std::iterator_traits<RandomIt>::value_type>());
-    }
+    template<typename T>
+    using default_comp = std::less<std::iterator_traits<T>::value_type>;
 
     template<typename RandomIt, typename Compare>
-    void make_heap(RandomIt first, RandomIt last, Compare comp)
+    void make_heap(RandomIt first, RandomIt last, Compare comp = default_comp<RandomIt>())
     {
         size_t size = std::distance(first, last);
         // NOTE: this offset will overflow if size_t is used, so use a signed int
@@ -22,14 +19,8 @@ namespace mm
         }
     }
 
-    template<typename RandomIt>
-    void pop_heap(const RandomIt first, const RandomIt last)
-    {
-        pop_heap(first, last, std::less<std::iterator_traits<RandomIt>::value_type>());
-    }
-
     template<typename RandomIt, typename Compare>
-    void pop_heap(const RandomIt first, const RandomIt last, const Compare comp)
+    void pop_heap(const RandomIt first, const RandomIt last, const Compare comp = default_comp<RandomIt>())
     {
         auto tmp = *first;
         *first = *(last - 1);
@@ -37,14 +28,8 @@ namespace mm
         sift_down(first, first, last - 1, comp);
     }
 
-    template<typename RandomIt>
-    void push_heap(const RandomIt first, const RandomIt last)
-    {
-        push_heap(first, last, std::less<std::iterator_traits<RandomIt>::value_type>());
-    }
-
     template<typename RandomIt, typename Compare>
-    void push_heap(const RandomIt first, const RandomIt last, const Compare comp)
+    void push_heap(const RandomIt first, const RandomIt last, const Compare comp = default_comp<RandomIt>())
     {
         sift_up(last - 1, first, last, comp);
     }
