@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/mayant15/mmcontainers/workflows/CI/badge.svg?branch=master)
 
-Custom implementation of common data structures
+Custom implementation of common data structures. **NOTE:** C++17 features are used in this library, so compile with appropriate flags.
 
 ## Usage
 

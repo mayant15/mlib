@@ -4,7 +4,7 @@
 #include <deque>
 #include <vector>
 
-#include <algorithm>
+#include "algorithm.h"
 
 namespace mm
 {
@@ -26,7 +26,7 @@ namespace mm
         explicit priority_queue(const Compare& compare) : priority_queue(compare, Container()) {}
         priority_queue(const Compare& compare, const Container& container) : _compare(compare), _data(container)
         {
-            std::make_heap(_data.begin(), _data.end());
+            mm::make_heap(_data.begin(), _data.end(), _compare);
         }
 
         priority_queue(const priority_queue& other) : _compare(std::move(other._compare)), _data(other._data) {}
@@ -50,25 +50,25 @@ namespace mm
         void push(const T& val)
         {
             _data.push_back(val);
-            std::push_heap(_data.begin(), _data.end(), _compare);
+            mm::push_heap(_data.begin(), _data.end(), _compare);
         }
 
         void push(T&& val)
         {
             _data.push_back(std::move(val));
-            std::push_heap(_data.begin(), _data.end(), _compare);
+            mm::push_heap(_data.begin(), _data.end(), _compare);
         }
 
         template<typename ...Args>
         void emplace(Args&& ...args)
         {
             _data.emplace_back(std::forward<Args>(args)...);
-            std::push_heap(_data.begin(), _data.end(), _compare);
+            mm::push_heap(_data.begin(), _data.end(), _compare);
         }
 
         void pop()
         {
-            std::pop_heap(_data.begin(), _data.end(), _compare);
+            mm::pop_heap(_data.begin(), _data.end(), _compare);
             _data.pop_back();
         }
     };
