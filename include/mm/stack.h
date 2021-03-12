@@ -25,12 +25,12 @@ namespace mm
             return _data.back();
         }
 
-        [[no_discard]] bool empty() const
+        [[nodiscard]] bool empty() const
         {
             return (_data.size() == 0);
         }
 
-        size_t size() const
+        [[nodiscard]] size_t size() const
         {
             return _data.size();
         }

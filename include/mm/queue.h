@@ -30,19 +30,19 @@ namespace mm
         }
 
         priority_queue(const priority_queue& other) : _compare(std::move(other._compare)), _data(other._data) {}
-        priority_queue(priority_queue&& other) : _compare(std::move(other._compare)), _data(std::move(other._data)) {}
+        priority_queue(priority_queue&& other) : _compare(std::move(other._compare)), _data(std::move(other._data)) {} // NOLINT(performance-noexcept-move-constructor)
 
         const T& top() const
         {
             return _data[0];
         }
 
-        bool empty() const
+        [[nodiscard]] bool empty() const
         {
             return (_data.size() == 0);
         }
 
-        size_t size() const
+        [[nodiscard]] size_t size() const
         {
             return _data.size();
         }

@@ -82,7 +82,7 @@ namespace mm
             _visited[index] = value;
         }
 
-        bool is_visited(size_t index) const
+        [[nodiscard]] bool is_visited(size_t index) const
         {
             return _visited[index];
         }

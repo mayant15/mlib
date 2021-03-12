@@ -6,14 +6,14 @@
 namespace mm
 {
     template<typename T>
-    using default_comp = std::less<std::iterator_traits<T>::value_type>;
+    using default_comp = std::less<typename std::iterator_traits<T>::value_type>;
 
     template<typename RandomIt, typename Compare>
     void make_heap(RandomIt first, RandomIt last, Compare comp = default_comp<RandomIt>())
     {
         size_t size = std::distance(first, last);
         // NOTE: this offset will overflow if size_t is used, so use a signed int
-        for (int offset = size / 2; offset >= 0; offset--)
+        for (int offset = size / 2; offset >= 0; offset--) // NOLINT(cppcoreguidelines-narrowing-conversions)
         {
             sift_down(first + offset, first, last, comp);
         }

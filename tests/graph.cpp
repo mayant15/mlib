@@ -1,8 +1,5 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-
-#include "../include/mm/graph.h"
-
+#include <mm/graph.h>
 #include <vector>
 
 TEST_CASE("Test the graph class")

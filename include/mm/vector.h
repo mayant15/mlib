@@ -25,10 +25,10 @@ namespace mm
         using const_reference = const value_type&;
         
         using traits = std::allocator_traits<Allocator>;
-        using pointer = traits::pointer;
-        using const_pointer = traits::const_pointer;
+        using pointer = typename traits::pointer;
+        using const_pointer = typename traits::const_pointer;
 
-        vector(const size_t size = 0) : _size(size)
+        vector(const size_t size = 0) : _size(size) // NOLINT(google-explicit-constructor)
         {
             if (size == 0)
             {
@@ -89,12 +89,12 @@ namespace mm
             traits::deallocate(ac, _data, _capacity);
         }
 
-        size_t size() const
+        [[nodiscard]] size_t size() const
         {
             return _size;
         }
 
-        size_t capacity() const
+        [[nodiscard]] size_t capacity() const
         {
             return _capacity;
         }
@@ -134,7 +134,7 @@ namespace mm
             return *(_data + _size - 1);
         }
 
-        bool empty() const
+        [[nodiscard]] bool empty() const
         {
             return (_size == 0);
         }

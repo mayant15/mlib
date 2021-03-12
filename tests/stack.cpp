@@ -1,8 +1,5 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-
-#include "../include/mm/stack.h"
-
+#include <mm/stack.h>
 #include <string>
 
 struct dummy
