@@ -6,6 +6,7 @@ set(SOURCES
     tests/doctest.cpp
     
     tests/graph.cpp
+    tests/lock.cpp
     tests/queue.cpp
     tests/stack.cpp
     tests/vector.cpp
