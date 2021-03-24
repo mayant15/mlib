@@ -8,6 +8,8 @@ find_package(Threads REQUIRED)
 set(SOURCES
     tests/doctest.cpp
 
+    tests/math/random.cpp
+
     tests/concurrent/set.cpp
     
     tests/graph.cpp
