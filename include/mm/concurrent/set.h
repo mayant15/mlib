@@ -1,22 +1,25 @@
 #pragma once
 
+#include <mutex>
 #include <cassert>
+#include <functional>
 #include <stdexcept>
 
 namespace mm::concurrent
 {
-    template<class T>
-    class set
+    template<class T, class Hash = std::hash<T>>
+    class lazy_set
     {
     public:
-        set()
+        lazy_set()
         {
             _head = new node;
             _tail = new node;
             _head->_next = _tail;
+            _tail->_key = std::numeric_limits<size_t>::max();
         }
 
-        ~set()
+        ~lazy_set()
         {
             auto current = _head;
             while (current != nullptr)
@@ -27,79 +30,115 @@ namespace mm::concurrent
             }
         }
 
-        void add(T val)
+        bool add(T val)
         {
-            // Create new node
-            auto newnode = new node;
-            newnode->_data = val;
-
-            // Find insert position
-            node* current = nullptr;
-            if (_size == 0)
+            size_t key = _hash(val);
+            while(true) // keep retrying
             {
-                current = _head;
-            }
-            else
-            {
-                current = _head->_next;
-                while (current->_data < val && current->_next != _tail)
+                // Find the node to add this after
+                node* prev = _head;
+                node* curr = _head->_next;
+                while(curr->_key < key)
                 {
-                    current = current->_next;
+                    prev = curr;
+                    curr = curr->_next;
                 }
-            }
 
-            newnode->_next = current->_next;
-            current->_next = newnode;
-            ++_size;
+                // insert between prev and curr
+                try
+                {
+                    // lock the nodes that we're operating on and validate
+                    std::scoped_lock lock(prev->_mutex, curr->_mutex);
+                    if (validate(prev, curr))
+                    {
+                        // check if already present
+                        if (curr->_key == key) return false;
+
+                        // add if not present
+                        node* n = new node;
+                        n->_data = val;
+                        n->_key = key;
+                        prev->_next = n;
+                        n->_next = curr;
+                        _size++;
+                        return true;
+                    }
+                }
+                catch (...) {}
+            }
         }
 
-        void remove(T val)
+        bool remove(T val)
         {
-            assert(_size != 0);
-            auto current = _head->_next;
-            auto prev = _head;
-            while (current != _tail && current->_data != val)
-            {
-                prev = current;
-                current = current->_next;
-            }
+            if (_size == 0) return false;
 
-            if (current == _tail)
+            size_t key = _hash(val);
+            while(true)
             {
-                throw std::runtime_error { "Value does not exist" };
-            }
+                // find the node to remove
+                node* prev = _head;
+                node* curr = prev->_next;
+                while(curr->_key < key)
+                {
+                    prev = curr;
+                    curr = curr->_next;
+                }
 
-            prev->_next = current->_next;
-            delete current;
-            --_size;
+                try
+                {
+                    std::scoped_lock lock(prev->_mutex, curr->_mutex);
+                    if (validate(prev, curr))
+                    {
+                        if (curr->_key != key) return false;
+
+                        curr->_marked = true; // TODO: no garbage collection here, curr will dangle. shared_ptr?
+                        prev->_next = curr->_next;
+                        _size--;
+                        return true;
+                    }
+                }
+                catch (...) {}
+            }
         }
 
         bool contains(T val)
         {
-            if (_size == 0) return false;
-
-            auto current = _head->_next;
-            while (current != _tail && current->_data != val)
+            size_t key = _hash(val);
+            node* curr = _head;
+            while(curr->_key < key)
             {
-                current = current->_next;
+                curr = curr->_next;
             }
-
-            return (current != _tail);
+            return (!curr->_marked) && (curr->_key == key);
         }
 
         [[nodiscard]] size_t size() const { return _size; }
 
     private:
-
         struct node
         {
             T _data {};
+            size_t _key = 0;
+            bool _marked = false;
             node* _next = nullptr;
+            std::mutex _mutex {};
         };
 
-    private:
         node* _head = nullptr;
         node* _tail = nullptr;
-        size_t _size = 0;
+        std::atomic<size_t> _size = 0;
+        Hash _hash {};
+
+    private:
+        bool validate(const node* prev, const node* curr)
+        {
+            return (!prev->_marked) && (!curr->_marked) && (prev->_next == curr);
+        }
+    };
+
+    template<class T>
+    class non_blocking_set
+    {
+        //
     };
 }
