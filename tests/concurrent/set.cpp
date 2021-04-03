@@ -1,5 +1,6 @@
 #include "../doctest.h"
 #include <mm/concurrent/set.h>
+#include <thread>
 
 TEST_CASE("Test the concurrent set class")
 {
