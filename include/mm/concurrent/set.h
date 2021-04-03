@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <cassert>
+#include <atomic>
 #include <functional>
 #include <stdexcept>
 
