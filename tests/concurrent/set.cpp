@@ -57,7 +57,7 @@ TEST_CASE("Test the concurrent set class")
 
         bool out2;
         std::thread t2 ([&](){
-            out1 = set.remove(2);
+            out2 = set.remove(2);
         });
 
         t1.join();
