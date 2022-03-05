@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.13)
-project(mmcontainers)
+project(mlib)
 set(CMAKE_CXX_STANDARD 17)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -17,6 +17,8 @@ set(SOURCES
     tests/queue.cpp
     tests/stack.cpp
     tests/vector.cpp
+
+    tests/utility.cpp
 )
 
 add_executable(tests ${SOURCES})
