@@ -1,10 +1,10 @@
-# mmcontainers
+# mlib
 
 ![CI](https://github.com/mayant15/mlib/workflows/CI/badge.svg?branch=main)
 
-Custom implementation of common data structures.
+Custom implementation of common data structures, types and utilities. All the things that I need to use everywhere.
 
-**NOTE:** C++17 features are used in this library, so compile with appropriate flags.
+Requires C++17.
 
 ## Usage
 
